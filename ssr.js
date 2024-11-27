@@ -17,36 +17,9 @@ const templateHtml = isProduction
     : ''
 
 const options = {
-    // The build directory (an absolute path)
-    buildDir: path.resolve(process.cwd(), 'build'),
-
-    // The cache time for SSR'd pages (defaults to 600 seconds)
-    defaultCacheTimeSeconds: 30,
-
     // The contents of the config file for the current environment
     mobify: {},
-
-    // The port that the local dev server listens on
-    port: port,
-
-    localAllowCookies: true,
-
-    // The protocol on which the development Express app listens.
-    // Note that http://localhost is treated as a secure context for development,
-    // except by Safari.
-    protocol: 'http',
-
-    // Option for whether to set up a special endpoint for handling
-    // private SLAS clients
-    // Set this to false if using a SLAS public client
-    // When setting this to true, make sure to also set the PWA_KIT_SLAS_CLIENT_SECRET
-    // environment variable as this endpoint will return HTTP 501 if it is not set
-    useSLASPrivateClient: process.env.ENABLE_PRIVATE_CLIENT === 'true',
-
-    // A regex for identifying which SLAS endpoints the custom SLAS private
-    // client secret handler will inject an Authorization header.
-    applySLASPrivateClientToEndpoints:
-        /\/oauth2\/token|\/oauth2\/passwordless\/login|\/oauth2\/passwordless\/token/
+    localAllowCookies: true
 }
 
 let vite;
