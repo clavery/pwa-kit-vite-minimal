@@ -11,7 +11,7 @@ function App() {
           count is {count}
         </button>
         <p>
-          Bacon ipsum dolor amet chicken turducken rump leberkas beef alcatra buffalo andouille jerky jowl.
+          Bacon ipsum dolor amet chicken turducken rump leberkas beef alcatra buffalo andouille jerky chuck.
         </p>
       </div>
     </>
