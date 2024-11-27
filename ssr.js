@@ -45,8 +45,9 @@ const options = {
 let vite;
 // dev mode executes directly, SSR will be set for built bundles
 // note we want to avoid obscuring this condition via a constant so that
-// top level awaits are stripped from the bundle and not just conditionally skipped
+// top level awaits are tree-shaked from the bundle and not just conditionally skipped
 if (!import.meta.env?.SSR) {
+    console.log('Starting Vite server...')
     const {createServer} = await import('vite')
     vite = await createServer({
         server: {middlewareMode: true},
@@ -76,7 +77,7 @@ const {handler, app} = RemoteServerFactory.createHandler(options, (app) => {
                     'utf-8',
                 )
                 template = await vite.transformIndexHtml(url, template)
-                const {render} = await vite.ssrLoadModule('/src/entry-server.jsx')
+                const {render} = await vite.ssrLoadModule('/src/entry-server.tsx')
                 // SSR render
                 const appHtml = await render(url)
 

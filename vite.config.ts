@@ -2,9 +2,9 @@ import {defineConfig} from 'vite'
 import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({mode}) => ({
     plugins: [react()],
     ssr: {
-        noExternal: true
+        noExternal: mode === 'production' ? true : undefined
     }
-})
+}))
