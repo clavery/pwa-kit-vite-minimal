@@ -1,18 +1,20 @@
 import { defineConfig } from "vite";
 
-import packageJson from "./package.json";
-
-const dependencies = Object.keys({
-    ...packageJson.dependencies,
-    ...packageJson.devDependencies,
-});
-
 export default defineConfig({
     build: {
         ssr: "ssr.js",
-        target: "node20"
+        target: "node20",
+        rollupOptions: {
+            output: {
+                format: "cjs",
+                // MRT requires a js extension
+                entryFileNames: "[name].js"
+            }
+        }
     },
     ssr: {
-        noExternal: dependencies,
+        // setting to true seems to conflict with target: "node" externalizing
+        noExternal: /.*/,
+        target: "node"
     },
 });
