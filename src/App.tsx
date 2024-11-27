@@ -11,7 +11,7 @@ function App() {
           count is {count}
         </button>
         <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
+          Bacon ipsum dolor amet chicken turducken rump leberkas beef alcatra buffalo andouille jerky jowl.
         </p>
       </div>
     </>

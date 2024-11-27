@@ -1,4 +1,4 @@
-// entry point for the client bundle
+// entry point for the react client bundle
 
 import { StrictMode } from 'react'
 import { hydrateRoot } from 'react-dom/client'

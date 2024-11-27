@@ -5,9 +5,16 @@ import {RemoteServerFactory} from '@salesforce/pwa-kit-runtime/ssr/server/build-
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
+const isProduction = !!import.meta.env?.SSR
 const isRemote = Object.prototype.hasOwnProperty.call(process.env, 'AWS_LAMBDA_FUNCTION_NAME')
 const port = process.env.PORT || 5173
 const base = process.env.BASE || '/'
+
+console.log(path.resolve(__dirname, "./client/index.html"))
+// load client HTML from build dir in production
+const templateHtml = isProduction
+    ? fs.readFileSync(path.resolve(__dirname, './client/index.html'), 'utf-8')
+    : ''
 
 const options = {
     // The build directory (an absolute path)
@@ -56,6 +63,10 @@ if (!import.meta.env?.SSR) {
     })
 }
 
+var BUNDLE_ID = process.env.BUNDLE_ID
+// client assets built to client dir
+var BUNDLE_PATH = `/mobify/bundle/${BUNDLE_ID}/client/`
+
 const {handler, app} = RemoteServerFactory.createHandler(options, (app) => {
     if (!import.meta.env?.SSR) {
         app.use(vite.middlewares)
@@ -66,31 +77,39 @@ const {handler, app} = RemoteServerFactory.createHandler(options, (app) => {
     })
 
     // primary route
-    app.use('*', async (req, res, next) => {
+    app.use('*', async (req, res) => {
         const url = req.originalUrl
 
-        // dev mode will use vite middlewares
-        if (!import.meta.env?.SSR) {
-            try {
-                let template = fs.readFileSync(
+        let template
+        let render
+        try {
+            // dev mode will use vite API
+            if (!import.meta.env?.SSR) {
+                let _template = fs.readFileSync(
                     path.resolve(__dirname, 'index.html'),
                     'utf-8',
                 )
-                template = await vite.transformIndexHtml(url, template)
-                const {render} = await vite.ssrLoadModule('/src/entry-server.tsx')
-                // SSR render
-                const appHtml = await render(url)
-
-                const html = template.replace(`<!--ssr-outlet-->`, () => appHtml)
-
-                res.status(200).set({'Content-Type': 'text/html'}).end(html)
-            } catch (e) {
-                vite.ssrFixStacktrace(e)
-                next(e)
+                template = await vite.transformIndexHtml(url, _template)
+                template = template.replace(/__REPLACE_BASE__/g, "/")
+                render = (await vite.ssrLoadModule('/src/entry-server.tsx')).render
+            } else {
+                template = templateHtml
+                // replace the templated assets with the bundle path and also update the global for renderBuiltUrl
+                template = template.replace(/\/assets/g, BUNDLE_PATH + 'assets')
+                template = template.replace(/__REPLACE_BASE__/g, BUNDLE_PATH)
+                render = (await import('./src/entry-server.tsx')).render
             }
-        } else {
-            res.status(200).set({'Content-Type': 'text/plain'}).end('hello running on MRT')
-            next()
+            const rendered = await render(url)
+
+            var html = template
+                .replace(`<!--app-head-->`, rendered.head ?? '')
+                .replace(`<!--app-html-->`, rendered.html ?? '')
+
+            res.status(200).set({'Content-Type': 'text/html'}).send(html)
+        } catch (e) {
+            vite?.ssrFixStacktrace(e)
+            console.log(e.stack)
+            res.status(500).end(e.stack)
         }
     })
 })

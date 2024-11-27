@@ -1,4 +1,4 @@
-// entry point for the SSR bundle
+// entry point for the react SSR bundle
 
 import {StrictMode} from 'react'
 import {renderToString} from 'react-dom/server'
@@ -13,5 +13,12 @@ export function render(_url: string) {
             <App/>
         </StrictMode>,
     )
-    return html
+    // react-helmet, yada yada
+    const head = `
+    <title>pwa-kit-vite-minimal poc</title>
+    `
+    return {
+        html,
+        head
+    }
 }
