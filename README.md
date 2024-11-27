@@ -3,9 +3,10 @@
 POC of using Vite for building (minimal) https://github.com/SalesforceCommerceCloud/pwa-kit applications and replacing
 the webpack dev server with a vite based one.
 
-- faster HMR
+- fast HMR
+- SSR
 - vite toolchain
-- speedy builds
+- speedy build
 - typescript
 - no commerce code (just minimal react app)
 
@@ -24,14 +25,15 @@ open http://localhost:5173/
 ```bash
 npm install
 npm run build
-npm run push -- -s project -t environment
+npm run push -- project environment
 ```
 
 ## TODO
 
+- [ ] extend RemoteServerFactory for dev to remove junk, provide correlation ids, etc
 - [ ] PWA style config import
 - [ ] http-proxy's from config
-- [ ] Add push command
+- [ ] Call something via proxy (i.e. custom API, httpbin, etc)
 - [ ] Add helmet
 - [ ] static file serving of root assets (worker/favicon) - right now the main handler serves these as the rendered app html
 
