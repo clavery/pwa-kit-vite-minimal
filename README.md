@@ -34,3 +34,15 @@ npm run push -- -s project -t environment
 - [ ] Add push command
 - [ ] Add helmet
 - [ ] static file serving of root assets (worker/favicon) - right now the main handler serves these as the rendered app html
+
+
+## Support / License
+
+**This project should not be treated as Salesforce Product.** It is an example implementation.
+Customers and partners use this at-will with no expectation of roadmap, technical support,
+defect resolution, production-style SLAs.
+
+This project is maintained by the **Salesforce Community**. Salesforce Commerce Cloud or Salesforce Platform Technical
+Support do not support this project or its setup.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
