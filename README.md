@@ -35,7 +35,6 @@ npx @salesforce/pwa-kit-dev push -s project -t environment
 - [ ] http-proxy's from config
 - [ ] Call something via proxy (i.e. custom API, httpbin, etc)
 - [ ] Add helmet
-- [ ] static file serving of root assets (worker/favicon) - right now the main handler serves these as the rendered app html
 
 
 ## Support / License
