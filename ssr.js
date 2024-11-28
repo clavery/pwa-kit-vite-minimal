@@ -89,7 +89,9 @@ const {handler, app} = RemoteServerFactory.createHandler(options, (app) => {
                 /** @type {{html: string, head: HelmetData}} */
                 rendered = await render(url)
             } catch (e) {
-                // if ssr rendering fails try to still load client shell but set 500 status
+                // if ssr rendering fails (error boundaries do not work in SSR)
+                // try to still load client shell but set 500 status
+                // client errors will be caught by the error boundary
                 status = 500
                 console.error(e)
                 rendered = {
