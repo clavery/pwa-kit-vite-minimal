@@ -25,7 +25,7 @@ open http://localhost:5173/
 ```bash
 npm install
 npm run build
-npm run push -- project environment
+npx @salesforce/pwa-kit-dev push -s project -t environment
 ```
 
 ## TODO
