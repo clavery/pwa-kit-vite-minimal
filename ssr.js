@@ -12,8 +12,8 @@ const isRemote = Object.prototype.hasOwnProperty.call(process.env, 'AWS_LAMBDA_F
 const port = process.env.PORT || 5173
 const base = process.env.BASE || '/'
 
-// load client HTML from build dir in production
-const templateHtml = isProduction
+// load client HTML from build dir in production at boot up
+const TEMPLATE_HTML = isProduction
     ? fs.readFileSync(path.resolve(__dirname, './client/index.html'), 'utf-8')
     : ''
 
@@ -77,24 +77,40 @@ const {handler, app} = RemoteServerFactory.createHandler(options, (app) => {
                 template = template.replace(/\$baseUrl/g, "/")
                 render = (await vite.ssrLoadModule('/src/entry-server.tsx')).render
             } else {
-                template = templateHtml
+                template = TEMPLATE_HTML
                 // replace the (vite)templated assets with the bundle path and also update the global for renderBuiltUrl
                 template = template.replace(/\/assets/g, BUNDLE_PATH + 'assets')
                 template = template.replace(/\$baseUrl/g, BUNDLE_PATH)
                 render = (await import('./src/entry-server.tsx')).render
             }
-            /** @type {{html: string, head: HelmetData}} */
-            const rendered = await render(url)
+            let status = 200;
+            let rendered;
+            try {
+                /** @type {{html: string, head: HelmetData}} */
+                rendered = await render(url)
+            } catch (e) {
+                // if ssr rendering fails try to still load client shell but set 500 status
+                status = 500
+                console.error(e)
+                rendered = {
+                    html: '',
+                    head: {
+                    },
+                }
+            }
 
             var html = template
                 .replace(`$appHtml`, rendered.html ?? '')
             // interpolate the helmet tags if present
             Object.keys(rendered.head).forEach((key) => {
-                html = html.replace(`$HELMET.${key}`, rendered.head[key])
+                html = html.replace(`$HELMET.${key}`, rendered.head[key].toString())
             })
+            // remove any remaining $HELMET tags
+            html = html.replace(/\$HELMET\.\w+/g, '')
 
-            res.status(200).set({'Content-Type': 'text/html'}).send(html)
+            res.status(status).set({'Content-Type': 'text/html'}).send(html)
         } catch (e) {
+            // any major error should not render the page
             vite?.ssrFixStacktrace(e)
             console.log(e.stack)
             res.status(500).end(e.stack)
