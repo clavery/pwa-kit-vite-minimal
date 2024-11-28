@@ -8,6 +8,7 @@ the webpack dev server with a vite based one.
 - vite toolchain
 - speedy build
 - typescript
+- tailwind / shadcn UI
 - no commerce code (just minimal react app)
 
 ## Dev
