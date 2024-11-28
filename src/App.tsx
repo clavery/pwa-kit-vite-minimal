@@ -3,6 +3,7 @@ import './App.css'
 import {Helmet} from "react-helmet";
 import NewsletterPopup from "@/Dialog.tsx";
 import {Button} from "@/components/ui/button";
+import {Toaster} from "@/components/ui/toaster.tsx";
 
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
                     Bacon ipsum dolor amet chicken turducken rump leberkas beef alcatra buffalo andouille jerky chuck
                     chuck
                 </p>
+                <Toaster />
             </div>
         </>
     )
