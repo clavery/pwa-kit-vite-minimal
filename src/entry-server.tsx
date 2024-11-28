@@ -1,22 +1,17 @@
 // entry point for the react SSR bundle
 
-import {StrictMode} from 'react'
 import {renderToString} from 'react-dom/server'
 import App from './App'
+import {Helmet} from "react-helmet";
 
 /**
  * @param {string} _url
  */
 export function render(_url: string) {
     const html = renderToString(
-        <StrictMode>
-            <App/>
-        </StrictMode>,
+        <App/>
     )
-    // react-helmet, yada yada
-    const head = `
-    <title>pwa-kit-vite-minimal poc</title>
-    `
+    const head = Helmet.renderStatic()
     return {
         html,
         head

@@ -34,8 +34,6 @@ npx @salesforce/pwa-kit-dev push -s project -t environment
 - [ ] PWA style config import
 - [ ] http-proxy's from config
 - [ ] Call something via proxy (i.e. custom API, httpbin, etc)
-- [ ] Add helmet
-
 
 ## Support / License
 

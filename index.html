@@ -1,14 +1,18 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" $HELMET.htmlAttributes>
   <head>
     <meta charset="UTF-8" />
     <script>
-      window._BASE_URL = "__REPLACE_BASE__"
+      window._BASE_URL = "$baseUrl"
     </script>
-    <!--app-head-->
+    $HELMET.style
+    $HELMET.meta
+    $HELMET.link
+    $HELMET.script
+    $HELMET.title
   </head>
-  <body>
-    <div id="root"><!--app-html--></div>
+  <body $HELMET.bodyAttributes>
+    <div id="root">$appHtml</div>
     <script type="module" src="/src/entry-client.tsx"></script>
   </body>
 </html>

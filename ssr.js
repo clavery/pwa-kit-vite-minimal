@@ -1,3 +1,5 @@
+// This is a javascript file as it's run directly by node
+// You could use typescript instead with something like ts-node, etc
 import fs from 'node:fs'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
@@ -10,7 +12,6 @@ const isRemote = Object.prototype.hasOwnProperty.call(process.env, 'AWS_LAMBDA_F
 const port = process.env.PORT || 5173
 const base = process.env.BASE || '/'
 
-console.log(path.resolve(__dirname, "./client/index.html"))
 // load client HTML from build dir in production
 const templateHtml = isProduction
     ? fs.readFileSync(path.resolve(__dirname, './client/index.html'), 'utf-8')
@@ -73,20 +74,24 @@ const {handler, app} = RemoteServerFactory.createHandler(options, (app) => {
                     'utf-8',
                 )
                 template = await vite.transformIndexHtml(url, _template)
-                template = template.replace(/__REPLACE_BASE__/g, "/")
+                template = template.replace(/\$baseUrl/g, "/")
                 render = (await vite.ssrLoadModule('/src/entry-server.tsx')).render
             } else {
                 template = templateHtml
-                // replace the templated assets with the bundle path and also update the global for renderBuiltUrl
+                // replace the (vite)templated assets with the bundle path and also update the global for renderBuiltUrl
                 template = template.replace(/\/assets/g, BUNDLE_PATH + 'assets')
-                template = template.replace(/__REPLACE_BASE__/g, BUNDLE_PATH)
+                template = template.replace(/\$baseUrl/g, BUNDLE_PATH)
                 render = (await import('./src/entry-server.tsx')).render
             }
+            /** @type {{html: string, head: HelmetData}} */
             const rendered = await render(url)
 
             var html = template
-                .replace(`<!--app-head-->`, rendered.head ?? '')
-                .replace(`<!--app-html-->`, rendered.html ?? '')
+                .replace(`$appHtml`, rendered.html ?? '')
+            // interpolate the helmet tags if present
+            Object.keys(rendered.head).forEach((key) => {
+                html = html.replace(`$HELMET.${key}`, rendered.head[key])
+            })
 
             res.status(200).set({'Content-Type': 'text/html'}).send(html)
         } catch (e) {
