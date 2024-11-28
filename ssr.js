@@ -45,6 +45,16 @@ const {handler, app} = RemoteServerFactory.createHandler(options, (app) => {
         app.use(vite.middlewares)
     }
 
+    app.get('/robots.txt', (req, res) => {
+        res.status(404).end()
+    })
+    app.get('/worker.js', (req, res) => {
+        res.status(404).end()
+    })
+    app.get('/favicon.ico', (req, res) => {
+        res.status(404).end()
+    })
+
     app.get('/hello', (req, res) => {
         res.status(200).set({'Content-Type': 'text/plain'}).end('hello world')
     })
