@@ -7,11 +7,14 @@ import {
     ScrollRestoration,
 } from "react-router";
 
+import './App.css'
+
 import type {Route} from "./+types/root";
 
 export const links: Route.LinksFunction = () => [];
 
 export function Layout({children}: { children: React.ReactNode }) {
+
     return (
         <html lang="en">
         <head>

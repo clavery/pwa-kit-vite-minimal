@@ -4,7 +4,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {RemoteServerFactory} from '@salesforce/pwa-kit-runtime/ssr/server/build-remote-server.js'
-import { createRequestHandler } from "@react-router/express";
+import {createRequestHandler} from "@react-router/express";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -57,26 +57,30 @@ const {handler, app} = RemoteServerFactory.createHandler(options, (app) => {
         res.status(200).set({'Content-Type': 'text/plain'}).end('hello world')
     })
 
-    if (!import.meta.env?.SSR) {
-        // primary route
+    // primary route
+    if (!import.meta.env?.SSR) { // dev
         app.use('*', async (req, res, next) => {
-                try {
-                    const source = await vite.ssrLoadModule("./server/app.ts");
-                    return await source.reqHandler(req, res, next);
-                } catch (error) {
-                    console.log(error)
-                    if (typeof error === "object" && error instanceof Error) {
-                        vite.ssrFixStacktrace(error);
-                    }
-                    next(error);
+            try {
+                const source = await vite.ssrLoadModule("./server/app.ts");
+                return await source.reqHandler(req, res, next);
+            } catch (error) {
+                console.log(error)
+                if (typeof error === "object" && error instanceof Error) {
+                    vite.ssrFixStacktrace(error);
                 }
+                next(error);
+            }
         })
     } else { // production
         app.use('*', async (req, res, next) => {
-            // list directory under this file
-            const files = fs.readdirSync(path.resolve(__dirname, "./server"))
-            console.log(files)
-            const build = await import(SERVER_BUNDLE_BUILD_PATH).default
+            const _build = await import(SERVER_BUNDLE_BUILD_PATH)
+            console.log(BUNDLE_PATH)
+            // easier to just replace the path in the string than to try to manipulate the object
+            const newAssets = JSON.parse(JSON.stringify(_build.assets).replace(/"\/assets\//g, `"${BUNDLE_PATH}assets\/`))
+            const build = Object.assign({}, _build, {
+                publicPath: BUNDLE_PATH,
+                assets: newAssets
+            })
             const requestHandler = createRequestHandler({
                 build
             })

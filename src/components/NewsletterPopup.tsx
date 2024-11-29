@@ -1,16 +1,16 @@
 import {useState} from "react";
 import {Loader2, Mail} from "lucide-react";
-import {Button} from "@/components/ui/button";
+import {Button} from "@/components/ui/button.tsx";
 import {
     Dialog,
     DialogContent,
     DialogDescription,
     DialogHeader,
     DialogTitle,
-} from "@/components/ui/dialog";
-import {Input} from "@/components/ui/input";
-import {Label} from "@/components/ui/label";
-import {useToast} from "@/hooks/use-toast";
+} from "@/components/ui/dialog.tsx";
+import {Input} from "@/components/ui/input.tsx";
+import {Label} from "@/components/ui/label.tsx";
+import {useToast} from "@/hooks/use-toast.ts";
 
 export default function NewsletterPopup() {
     const [open, setOpen] = useState(true);
