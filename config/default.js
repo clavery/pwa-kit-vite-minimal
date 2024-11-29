@@ -3,7 +3,7 @@ module.exports = {
     externals: [],
     pageNotFoundURL: '/page-not-found',
     ssrEnabled: true,
-    ssrOnly: ['ssr.js', 'ssr.js.map', 'node_modules/**/*.*', 'assets/**/*.*'],
+    ssrOnly: ['ssr.js', 'ssr.js.map', 'node_modules/**/*.*', 'assets/**/*.*', 'server/**/*.*'],
     ssrShared: [
         'client/**/*.*'
     ],

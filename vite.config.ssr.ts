@@ -1,16 +1,16 @@
 // MRT SSR entry point build specifics
 import { defineConfig } from "vite";
 import path from "path";
-import react from "@vitejs/plugin-react";
 
 export default defineConfig({
-    plugins: [react()],
+    plugins: [],
     resolve: {
         alias: {
             "@": path.resolve(__dirname, "./src"),
         },
     },
     build: {
+        emptyOutDir: false,
         sourcemap: true,
         ssr: "ssr.js",
         target: "node20",

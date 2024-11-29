@@ -4,6 +4,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {RemoteServerFactory} from '@salesforce/pwa-kit-runtime/ssr/server/build-remote-server.js'
+import { createRequestHandler } from "@react-router/express";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -11,11 +12,7 @@ const isProduction = !!import.meta.env?.SSR
 const isRemote = Object.prototype.hasOwnProperty.call(process.env, 'AWS_LAMBDA_FUNCTION_NAME')
 const port = process.env.PORT || 5173
 const base = process.env.BASE || '/'
-
-// load client HTML from build dir in production at boot up
-const TEMPLATE_HTML = isProduction
-    ? fs.readFileSync(path.resolve(__dirname, './client/index.html'), 'utf-8')
-    : ''
+const SERVER_BUNDLE_BUILD_PATH = "./server/index.js";
 
 const options = {
     // The contents of the config file for the current environment
@@ -60,64 +57,32 @@ const {handler, app} = RemoteServerFactory.createHandler(options, (app) => {
         res.status(200).set({'Content-Type': 'text/plain'}).end('hello world')
     })
 
-    // primary route
-    app.use('*', async (req, res) => {
-        const url = req.originalUrl
-
-        let template
-        let render
-        try {
-            // dev mode will use vite API
-            if (!import.meta.env?.SSR) {
-                let _template = fs.readFileSync(
-                    path.resolve(__dirname, 'index.html'),
-                    'utf-8',
-                )
-                template = await vite.transformIndexHtml(url, _template)
-                template = template.replace(/\$baseUrl/g, "/")
-                render = (await vite.ssrLoadModule('/src/entry-server.tsx')).render
-            } else {
-                template = TEMPLATE_HTML
-                // replace the (vite)templated assets with the bundle path and also update the global for renderBuiltUrl
-                template = template.replace(/\/assets/g, BUNDLE_PATH + 'assets')
-                template = template.replace(/\$baseUrl/g, BUNDLE_PATH)
-                render = (await import('./src/entry-server.tsx')).render
-            }
-            let status = 200;
-            let rendered;
-            try {
-                /** @type {{html: string, head: HelmetData}} */
-                rendered = await render(url)
-            } catch (e) {
-                // if ssr rendering fails (error boundaries do not work in SSR)
-                // try to still load client shell but set 500 status
-                // client errors will be caught by the error boundary
-                status = 500
-                console.error(e)
-                rendered = {
-                    html: '',
-                    head: {
-                    },
+    if (!import.meta.env?.SSR) {
+        // primary route
+        app.use('*', async (req, res, next) => {
+                try {
+                    const source = await vite.ssrLoadModule("./server/app.ts");
+                    return await source.reqHandler(req, res, next);
+                } catch (error) {
+                    console.log(error)
+                    if (typeof error === "object" && error instanceof Error) {
+                        vite.ssrFixStacktrace(error);
+                    }
+                    next(error);
                 }
-            }
-
-            var html = template
-                .replace(`$appHtml`, rendered.html ?? '')
-            // interpolate the helmet tags if present
-            Object.keys(rendered.head).forEach((key) => {
-                html = html.replace(`$HELMET.${key}`, rendered.head[key].toString())
+        })
+    } else { // production
+        app.use('*', async (req, res, next) => {
+            // list directory under this file
+            const files = fs.readdirSync(path.resolve(__dirname, "./server"))
+            console.log(files)
+            const build = await import(SERVER_BUNDLE_BUILD_PATH).default
+            const requestHandler = createRequestHandler({
+                build
             })
-            // remove any remaining $HELMET tags
-            html = html.replace(/\$HELMET\.\w+/g, '')
-
-            res.status(status).set({'Content-Type': 'text/html'}).send(html)
-        } catch (e) {
-            // any major error should not render the page
-            vite?.ssrFixStacktrace(e)
-            console.log(e.stack)
-            res.status(500).end(e.stack)
-        }
-    })
+            return await requestHandler(req, res, next)
+        })
+    }
 })
 
 if (!import.meta.env?.SSR) {
