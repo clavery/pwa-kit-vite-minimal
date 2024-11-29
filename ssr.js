@@ -6,10 +6,6 @@ import {fileURLToPath} from 'node:url'
 import {RemoteServerFactory} from '@salesforce/pwa-kit-runtime/ssr/server/build-remote-server.js'
 import {createRequestHandler} from "@react-router/express";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-
-const isProduction = !!import.meta.env?.SSR
-const isRemote = Object.prototype.hasOwnProperty.call(process.env, 'AWS_LAMBDA_FUNCTION_NAME')
 const port = process.env.PORT || 5173
 const base = process.env.BASE || '/'
 const SERVER_BUNDLE_BUILD_PATH = "./server/index.js";
