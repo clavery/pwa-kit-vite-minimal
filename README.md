@@ -31,7 +31,6 @@ npx @salesforce/pwa-kit-dev push -s project -t environment
 
 ## TODO
 
-- [ ] extend RemoteServerFactory for dev to remove junk, provide correlation ids, etc
 - [ ] PWA style config import
 - [ ] react query SSR example (react-router loader)
 - [ ] http-proxy's from config

@@ -1,9 +1,6 @@
 // This is a javascript file as it's run directly by node
 // You could use typescript instead with something like ts-node, etc
-import fs from 'node:fs'
-import path from 'node:path'
-import {fileURLToPath} from 'node:url'
-import {RemoteServerFactory} from '@salesforce/pwa-kit-runtime/ssr/server/build-remote-server.js'
+import {ServerFactory} from './server/server-factory.js'
 import {createRequestHandler} from "@react-router/express";
 
 const port = process.env.PORT || 5173
@@ -34,7 +31,7 @@ var BUNDLE_ID = process.env.BUNDLE_ID
 // client assets built to client dir
 var BUNDLE_PATH = `/mobify/bundle/${BUNDLE_ID}/client/`
 
-const {handler, app} = RemoteServerFactory.createHandler(options, (app) => {
+const {handler, app} = ServerFactory.createHandler(options, (app) => {
     if (!import.meta.env?.SSR) {
         app.use(vite.middlewares)
     }
