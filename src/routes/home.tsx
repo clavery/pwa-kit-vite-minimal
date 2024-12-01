@@ -1,9 +1,7 @@
 import type {Route} from "./+types/home";
 import {useState} from "react";
-import NewsletterPopup from "@/components/NewsletterPopup";
 import {Button} from "@/components/ui/button.tsx";
-import {Toaster} from "@/components/ui/toaster.tsx";
-import {Link} from "react-router";
+import DefaultLayout from "./_layout.tsx";
 
 export function meta(_args: Route.MetaArgs) {
     return [
@@ -15,13 +13,8 @@ export default function Home() {
     const [count, setCount] = useState(0)
 
     return (
-        <>
+        <DefaultLayout>
             <div className="max-w-800 mx-auto my-0 text-center">
-                <h1 className="text-4xl font-bold mb-1">
-                    pwa-kit-runtime-with-vite-tailwind-shadcn
-                </h1>
-                <NewsletterPopup/>
-
                 <Button onClick={() => setCount((count) => count + 1)}>
                     count is {count}
                 </Button>
@@ -29,11 +22,7 @@ export default function Home() {
                     Bacon ipsum dolor amet chicken turducken rump leberkas beef alcatra buffalo andouille jerky chuck
                     chuck
                 </p>
-                <p>
-                    <Link to={"test"}>Go to test page</Link>
-                </p>
             </div>
-            <Toaster />
-        </>
+        </DefaultLayout>
     )
 }

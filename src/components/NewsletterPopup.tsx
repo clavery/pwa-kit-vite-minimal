@@ -12,14 +12,17 @@ import {Input} from "@/components/ui/input.tsx";
 import {Label} from "@/components/ui/label.tsx";
 import {useToast} from "@/hooks/use-toast.ts";
 
+const onClient = typeof window !== "undefined";
+
 export default function NewsletterPopup() {
-    const [open, setOpen] = useState(true);
+    const [open, setOpen] = useState(/* only open if session storage doesn't have a key */ () => onClient && !sessionStorage.getItem("newsletter-popup-closed"));
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
     const {toast} = useToast();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        sessionStorage.setItem("newsletter-popup-closed", "true");
         setLoading(true);
 
         // Simulate API call
@@ -34,8 +37,13 @@ export default function NewsletterPopup() {
         setOpen(false);
     };
 
+    const close = () => {
+        sessionStorage.setItem("newsletter-popup-closed", "true");
+        setOpen(false);
+    }
+
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={close}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle className="flex gap-2 items-center text-2xl">
@@ -63,7 +71,7 @@ export default function NewsletterPopup() {
                         <Button
                             type="button"
                             variant="ghost"
-                            onClick={() => setOpen(false)}
+                            onClick={close}
                             className="sm:order-first"
                         >
                             Maybe later
