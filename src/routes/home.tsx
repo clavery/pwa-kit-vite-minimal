@@ -20,7 +20,7 @@ export default function Home() {
                 </Button>
                 <p className="m-2">
                     Bacon ipsum dolor amet chicken turducken rump leberkas beef alcatra buffalo andouille jerky chuck
-                    chuck
+                    chuck4
                 </p>
             </div>
         </DefaultLayout>

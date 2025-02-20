@@ -35,7 +35,6 @@ npx @salesforce/pwa-kit-dev push -s project -t environment
 - [ ] react query SSR example (react-router loader)
 - [ ] http-proxy's from config
 - [ ] Call something via proxy (i.e. custom API, httpbin, etc)
-- [ ] source map wonkiness after adding RR
 
 ## Support / License
 
