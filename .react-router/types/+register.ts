@@ -9,4 +9,8 @@ declare module "react-router" {
 type Params = {
   "/": {};
   "/test": {};
+  "/products": {};
+  "/products/:pid": {
+    "pid": string;
+  };
 };

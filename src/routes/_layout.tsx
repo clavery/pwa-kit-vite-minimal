@@ -24,6 +24,9 @@ export default function DefaultLayout({children}: { children: React.ReactNode })
                         <li>
                             <NavigationLink to="/test">Test</NavigationLink>
                         </li>
+                        <li>
+                            <NavigationLink to="/products">Products</NavigationLink>
+                        </li>
                     </ul>
                 </nav>
             </header>
