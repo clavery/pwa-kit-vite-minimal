@@ -14,6 +14,7 @@ the webpack dev server with a vite based one.
 ## Dev
 
 ```bash
+# copy .env to .env.local and adjust with your SLAS private client
 npm start
 open http://localhost:5173/
 ```
