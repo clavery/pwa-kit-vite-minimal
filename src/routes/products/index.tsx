@@ -1,6 +1,6 @@
 import type { Route } from "./+types/index"
-import pkg from "commerce-sdk-isomorphic"
-const { helpers, ShopperLogin, ShopperSearch } = pkg
+import sdk from 'commerce-sdk-isomorphic';
+const {helpers, ShopperLogin, ShopperSearch} = sdk;
 import { config } from "@/state/auth.ts"
 import DefaultLayout from "../_layout.tsx"
 import { Link } from "react-router"
@@ -27,6 +27,10 @@ export async function loader({}: Route.LoaderArgs) {
         parameters: { refine: ["cgid=root"], q: "shirt" },
     })
     return { searchResult }
+}
+
+export function headers() {
+    return { "Cache-Control": "max-age=300", "x-foo": "bar" };
 }
 
 export default function Products({ loaderData }: Route.ComponentProps) {

@@ -1,8 +1,8 @@
 import { config } from "@/state/auth.ts"
-import pkg from "commerce-sdk-isomorphic"
 import DefaultLayout from "../_layout.tsx"
 import type { Route } from "./+types/product"
-const { helpers, ShopperLogin, ShopperProducts } = pkg
+import sdk from 'commerce-sdk-isomorphic';
+const {helpers, ShopperLogin, ShopperProducts} = sdk;
 
 export function meta({ data }: Route.MetaArgs) {
     return [{ title: data.product.name }]

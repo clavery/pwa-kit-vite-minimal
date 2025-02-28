@@ -1,5 +1,5 @@
 import {NavLink} from "react-router";
-import NewsletterPopup from "@/components/NewsletterPopup.tsx";
+//import NewsletterPopup from "@/components/NewsletterPopup.tsx";
 import {Toaster} from "@/components/ui/toaster.tsx";
 
 const NavigationLink = ({to, children}: { to: string, children: React.ReactNode }) => {
@@ -38,7 +38,6 @@ export default function DefaultLayout({children}: { children: React.ReactNode })
             <footer className="bg-gray-800 text-white p-4">
                 <p>&copy; 2024 Example Com</p>
             </footer>
-            <NewsletterPopup/>
             <Toaster/>
         </div>
     );

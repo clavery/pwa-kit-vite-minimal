@@ -16,7 +16,7 @@ export async function loader({ }: Route.LoaderArgs) {
 }
 
 export async function clientLoader({
-  serverLoader,
+  //serverLoader,
 }: Route.ClientLoaderArgs) {
   return { "foo":"baz", "client": "yes" };
 }
