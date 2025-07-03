@@ -1,8 +1,8 @@
-import type { Route } from "./+types/index"
+import type { Route } from "./+types/plp"
 import sdk from 'commerce-sdk-isomorphic';
 const {helpers, ShopperLogin, ShopperSearch} = sdk;
 import { config } from "@/state/auth.ts"
-import DefaultLayout from "../_layout.tsx"
+import DefaultLayout from "./_layout.tsx"
 import { Link } from "react-router"
 
 export function meta(_args: Route.MetaArgs) {

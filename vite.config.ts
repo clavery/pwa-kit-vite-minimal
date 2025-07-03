@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => ({
         },
     },
     build: {
-        sourcemap: true,
+        sourcemap: true
     },
     ssr: {
         noExternal: mode === 'production' ? true : undefined

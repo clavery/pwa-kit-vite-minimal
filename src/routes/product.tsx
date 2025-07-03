@@ -1,5 +1,5 @@
 import { config } from "@/state/auth.ts"
-import DefaultLayout from "../_layout.tsx"
+import DefaultLayout from "./_layout.tsx"
 import type { Route } from "./+types/product"
 import sdk from 'commerce-sdk-isomorphic';
 const {helpers, ShopperLogin, ShopperProducts} = sdk;

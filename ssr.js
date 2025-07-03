@@ -69,6 +69,12 @@ const {handler, app} = ServerFactory.createHandler(options, (app) => {
             const _build = await import(SERVER_BUNDLE_BUILD_PATH)
             console.log(BUNDLE_PATH)
             // easier to just replace the path in the string than to try to manipulate the object
+            console.log(req.query)
+            let urlStr = `${req.protocol}://${req.hostname}${req.originalUrl}`
+              let url = new URL(urlStr);
+            console.log(urlStr)
+            console.log(req.originalUrl)
+            console.log(url.searchParams)
             const newAssets = JSON.parse(JSON.stringify(_build.assets).replace(/"\/assets\//g, `"${BUNDLE_PATH}assets\/`))
             const build = Object.assign({}, _build, {
                 publicPath: BUNDLE_PATH,

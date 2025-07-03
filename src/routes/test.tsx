@@ -15,12 +15,6 @@ export async function loader({ }: Route.LoaderArgs) {
     return { foo: "bar"}
 }
 
-export async function clientLoader({
-  //serverLoader,
-}: Route.ClientLoaderArgs) {
-  return { "foo":"baz", "client": "yes" };
-}
-
 export default function Test({loaderData}: Route.ComponentProps) {
     const [count, _setCount] = useState(0)
 
