@@ -1,6 +1,8 @@
 import {RemoteServerFactory} from '@salesforce/pwa-kit-runtime/ssr/server/build-remote-server.js'
 import serverlessExpress from '@codegenie/serverless-express'
 import {processLambdaResponse} from '@salesforce/pwa-kit-runtime/utils/ssr-server.js'
+import { getCurrentInvoke } from '@codegenie/serverless-express'
+
 
 /**
  * Override some behavior of the pwa-kit-runtime RemoteServerFactory
@@ -8,8 +10,13 @@ import {processLambdaResponse} from '@salesforce/pwa-kit-runtime/utils/ssr-serve
  */
 export const ServerFactory = Object.assign({}, RemoteServerFactory, {
     _setRequestId: function(app) {
-        if (!import.meta.env?.SSR) {
+        // use dev shim due to issue noted below
+        if (true) {
             app.use((req, res, next) => {
+                // debug output
+                const { event, context } = getCurrentInvoke()
+                console.log('serverless event', event)
+                console.log('serverless context', context)
                 // shim in a request id
                 const correlationId = (new Date()).getTime().toString();
                 req.headers['x-correlation-id'] = correlationId
@@ -18,6 +25,9 @@ export const ServerFactory = Object.assign({}, RemoteServerFactory, {
                 next()
             })
         } else {
+            // TODO: using the new serverless library this information is
+            // NO LONGER provided. So we need to get the info using the
+            // new serverless library
             return RemoteServerFactory._setRequestId.call(this, app)
         }
     },
