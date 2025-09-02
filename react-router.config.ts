@@ -3,5 +3,6 @@ import type {Config} from "@react-router/dev/config";
 export default {
     ssr: true,
     serverModuleFormat: "cjs",
-    appDirectory: "src"
+    appDirectory: "src",
+    routeDiscovery: { mode: "initial" },
 } satisfies Config;

@@ -1,87 +1,107 @@
 // This is a javascript file as it's run directly by node
 // You could use typescript instead with something like ts-node, etc
-import {ServerFactory} from './server/server-factory.js'
-import {createRequestHandler} from "@react-router/express";
+import { ServerFactory } from "./server/server-factory.js"
+import { createRequestHandler } from "@react-router/express"
 
 const port = process.env.PORT || 5173
-const base = process.env.BASE || '/'
-const SERVER_BUNDLE_BUILD_PATH = "./server/index.js";
+const base = process.env.BASE || "/"
+const SERVER_BUNDLE_BUILD_PATH = "./server/index.js"
 
 const options = {
     // The contents of the config file for the current environment
     mobify: {},
-    localAllowCookies: true
+    localAllowCookies: true,
 }
 
-let vite;
-// dev mode executes directly, SSR will be set for built bundles
-// note we want to avoid obscuring this condition via a constant so that
-// top level awaits are tree-shaked from the bundle and not just conditionally skipped
+
+// this is hacky to avoid a top level await
+let vite
+let vitePromise
+
 if (!import.meta.env?.SSR) {
-    console.log('Starting Vite server...')
-    const {createServer} = await import('vite')
-    vite = await createServer({
-        server: {middlewareMode: true},
-        appType: 'custom',
-        base,
-    })
+    console.log("Starting Vite server...")
+    vitePromise = import("vite").then(({ createServer }) =>
+        createServer({
+            server: { middlewareMode: true },
+            appType: "custom",
+            base,
+        })
+    )
+}
+
+const getVite = async () => {
+    if (!vite && vitePromise) {
+        vite = await vitePromise
+    }
+    return vite
 }
 
 var BUNDLE_ID = process.env.BUNDLE_ID
 // client assets built to client dir
 var BUNDLE_PATH = `/mobify/bundle/${BUNDLE_ID}/client/`
 
-const {handler, app} = ServerFactory.createHandler(options, (app) => {
+const { handler, app } = ServerFactory.createHandler(options, (app) => {
     if (!import.meta.env?.SSR) {
-        app.use(vite.middlewares)
+        app.use(async (req, res, next) => {
+            const viteInstance = await getVite()
+            viteInstance.middlewares(req, res, next)
+        })
     }
 
-    app.get('/robots.txt', (req, res) => {
+    app.get("/robots.txt", (req, res) => {
         res.status(404).end()
     })
-    app.get('/worker.js', (req, res) => {
+    app.get("/worker.js", (req, res) => {
         res.status(404).end()
     })
-    app.get('/favicon.ico', (req, res) => {
+    app.get("/favicon.ico", (req, res) => {
         res.status(404).end()
     })
 
-    app.get('/hello', (req, res) => {
-        res.status(200).set({'Content-Type': 'text/plain'}).end('hello world')
+    app.get("/hello", (req, res) => {
+        res.status(200).set({ "Content-Type": "text/plain" }).end("hello world")
     })
 
     // primary route
-    if (!import.meta.env?.SSR) { // dev
-        app.use('*', async (req, res, next) => {
+    if (!import.meta.env?.SSR) {
+        // dev
+        app.use("*", async (req, res, next) => {
             try {
-                const source = await vite.ssrLoadModule("./server/app.ts");
-                return await source.reqHandler(req, res, next);
+                const viteInstance = await getVite();
+                const source = await vite.ssrLoadModule("./server/app.ts")
+                return await source.reqHandler(req, res, next)
             } catch (error) {
                 console.log(error)
                 if (typeof error === "object" && error instanceof Error) {
-                    vite.ssrFixStacktrace(error);
+                    vite.ssrFixStacktrace(error)
                 }
-                next(error);
+                next(error)
             }
         })
-    } else { // production
-        app.use('*', async (req, res, next) => {
+    } else {
+        // production
+        app.use("*", async (req, res, next) => {
             const _build = await import(SERVER_BUNDLE_BUILD_PATH)
             console.log(BUNDLE_PATH)
             // easier to just replace the path in the string than to try to manipulate the object
-            console.log(req.query)
+            console.log("req.query", req.query)
             let urlStr = `${req.protocol}://${req.hostname}${req.originalUrl}`
-              let url = new URL(urlStr);
+            let url = new URL(urlStr)
             console.log(urlStr)
-            console.log(req.originalUrl)
+            console.log("req.originalUrl", req.originalUrl)
             console.log(url.searchParams)
-            const newAssets = JSON.parse(JSON.stringify(_build.assets).replace(/"\/assets\//g, `"${BUNDLE_PATH}assets\/`))
+            const newAssets = JSON.parse(
+                JSON.stringify(_build.assets).replace(
+                    /"\/assets\//g,
+                    `"${BUNDLE_PATH}assets\/`
+                )
+            )
             const build = Object.assign({}, _build, {
                 publicPath: BUNDLE_PATH,
-                assets: newAssets
+                assets: newAssets,
             })
             const requestHandler = createRequestHandler({
-                build
+                build,
             })
             return await requestHandler(req, res, next)
         })
