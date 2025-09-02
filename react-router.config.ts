@@ -4,5 +4,4 @@ export default {
     ssr: true,
     serverModuleFormat: "cjs",
     appDirectory: "src",
-    routeDiscovery: { mode: "initial" },
 } satisfies Config;
