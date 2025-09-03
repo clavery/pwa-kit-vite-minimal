@@ -2,6 +2,7 @@
 // You could use typescript instead with something like ts-node, etc
 import { ServerFactory } from "./server/server-factory.js"
 import { createRequestHandler } from "@react-router/express"
+import { getCurrentInvoke } from '@codegenie/serverless-express'
 
 const port = process.env.PORT || 5173
 const base = process.env.BASE || "/"
@@ -81,15 +82,15 @@ const { handler, app } = ServerFactory.createHandler(options, (app) => {
     } else {
         // production
         app.use("*", async (req, res, next) => {
+            // some debugging output
+            const { event, context } = getCurrentInvoke()
+            console.log('serverless event', event)
+            console.log('serverless context', context)
+
             const _build = await import(SERVER_BUNDLE_BUILD_PATH)
-            console.log(BUNDLE_PATH)
             // easier to just replace the path in the string than to try to manipulate the object
-            console.log("req.query", req.query)
             let urlStr = `${req.protocol}://${req.hostname}${req.originalUrl}`
             let url = new URL(urlStr)
-            console.log(urlStr)
-            console.log("req.originalUrl", req.originalUrl)
-            console.log(url.searchParams)
             const newAssets = JSON.parse(
                 JSON.stringify(_build.assets).replace(
                     /"\/assets\//g,
