@@ -89,8 +89,6 @@ const { handler, app } = ServerFactory.createHandler(options, (app) => {
 
             const _build = await import(SERVER_BUNDLE_BUILD_PATH)
             // easier to just replace the path in the string than to try to manipulate the object
-            let urlStr = `${req.protocol}://${req.hostname}${req.originalUrl}`
-            let url = new URL(urlStr)
             const newAssets = JSON.parse(
                 JSON.stringify(_build.assets).replace(
                     /"\/assets\//g,
