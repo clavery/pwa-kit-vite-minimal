@@ -96,21 +96,6 @@ const { handler, app } = ServerFactory.createHandler(options, (app) => {
                     `"${BUNDLE_PATH}assets\/`
                 )
             )
-            var keys = [
-                "assets",
-                "assetsBuildDirectory",
-                "basename",
-                "future",
-                "isSpaMode",
-                "publicPath",
-            ]
-            console.log(Object.keys(_build))
-            // output each key of _build
-            keys.forEach((key) => {
-                if (_build[key] !== undefined) {
-                    console.log(`_build.${key}:`, _build[key])
-                }
-            })
 
             const build = Object.assign({}, _build, {
                 publicPath: BUNDLE_PATH,
