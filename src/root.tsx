@@ -21,10 +21,12 @@ export function Layout({children}: { children: React.ReactNode }) {
     return (
         <html lang="en">
         <head>
-            <script>
-                window._BUNDLE_ID = {JSON.stringify(bundleId)};
-                window._BUNDLE_PATH = {JSON.stringify(bundlePath)};
-            </script>
+            <script dangerouslySetInnerHTML={{
+                __html: `
+                    window._BUNDLE_ID = ${JSON.stringify(bundleId)};
+                    window._BUNDLE_PATH = ${JSON.stringify(bundlePath)};
+                `
+            }} />
             <meta charSet="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1"/>
             <Meta/>
