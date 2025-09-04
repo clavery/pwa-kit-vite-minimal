@@ -15,9 +15,16 @@ export const links: Route.LinksFunction = () => [];
 
 export function Layout({children}: { children: React.ReactNode }) {
 
+    const bundleId = process.env.BUNDLE_ID || 'local';
+    const bundlePath = `/mobify/bundle/${bundleId}/client/`
+
     return (
         <html lang="en">
         <head>
+            <script>
+                window._BUNDLE_ID = {JSON.stringify(bundleId)};
+                window._BUNDLE_PATH = {JSON.stringify(bundlePath)};
+            </script>
             <meta charSet="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1"/>
             <Meta/>

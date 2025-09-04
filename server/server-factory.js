@@ -3,7 +3,6 @@ import serverlessExpress from '@codegenie/serverless-express'
 import {processLambdaResponse} from '@salesforce/pwa-kit-runtime/utils/ssr-server.js'
 import { getCurrentInvoke } from '@codegenie/serverless-express'
 
-
 /**
  * Override some behavior of the pwa-kit-runtime RemoteServerFactory
  * while in development mode

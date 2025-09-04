@@ -2,18 +2,23 @@
 // You could use typescript instead with something like ts-node, etc
 import { ServerFactory } from "./server/server-factory.js"
 import { createRequestHandler } from "@react-router/express"
-import { getCurrentInvoke } from '@codegenie/serverless-express'
+import { getCurrentInvoke } from "@codegenie/serverless-express"
 
 const port = process.env.PORT || 5173
 const base = process.env.BASE || "/"
 const SERVER_BUNDLE_BUILD_PATH = "./server/index.js"
+
+var BUNDLE_ID = process.env.BUNDLE_ID
+// client assets built to client dir
+var BUNDLE_PATH = `/mobify/bundle/${BUNDLE_ID}/client/`
+
+global._BUNDLE_PATH = BUNDLE_PATH || '/';
 
 const options = {
     // The contents of the config file for the current environment
     mobify: {},
     localAllowCookies: true,
 }
-
 
 // this is hacky to avoid a top level await
 let vite
@@ -36,10 +41,6 @@ const getVite = async () => {
     }
     return vite
 }
-
-var BUNDLE_ID = process.env.BUNDLE_ID
-// client assets built to client dir
-var BUNDLE_PATH = `/mobify/bundle/${BUNDLE_ID}/client/`
 
 const { handler, app } = ServerFactory.createHandler(options, (app) => {
     if (!import.meta.env?.SSR) {
@@ -68,7 +69,7 @@ const { handler, app } = ServerFactory.createHandler(options, (app) => {
         // dev
         app.use("*", async (req, res, next) => {
             try {
-                const viteInstance = await getVite();
+                const viteInstance = await getVite()
                 const source = await vite.ssrLoadModule("./server/app.ts")
                 return await source.reqHandler(req, res, next)
             } catch (error) {
@@ -84,8 +85,8 @@ const { handler, app } = ServerFactory.createHandler(options, (app) => {
         app.use("*", async (req, res, next) => {
             // some debugging output
             const { event, context } = getCurrentInvoke()
-            console.log('serverless event', event)
-            console.log('serverless context', context)
+            console.log("serverless event", event)
+            console.log("serverless context", context)
 
             const _build = await import(SERVER_BUNDLE_BUILD_PATH)
             // easier to just replace the path in the string than to try to manipulate the object
@@ -95,6 +96,22 @@ const { handler, app } = ServerFactory.createHandler(options, (app) => {
                     `"${BUNDLE_PATH}assets\/`
                 )
             )
+            var keys = [
+                "assets",
+                "assetsBuildDirectory",
+                "basename",
+                "future",
+                "isSpaMode",
+                "publicPath",
+            ]
+            console.log(Object.keys(_build))
+            // output each key of _build
+            keys.forEach((key) => {
+                if (_build[key] !== undefined) {
+                    console.log(`_build.${key}:`, _build[key])
+                }
+            })
+
             const build = Object.assign({}, _build, {
                 publicPath: BUNDLE_PATH,
                 assets: newAssets,
