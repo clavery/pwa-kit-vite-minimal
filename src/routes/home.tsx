@@ -2,6 +2,7 @@ import type { Route } from "./+types/home"
 import { useState } from "react"
 import { Button } from "@/components/ui/button.tsx"
 import DefaultLayout from "./_layout.tsx"
+import exampleImage from "@/assets/example.jpg"
 
 export function meta(_args: Route.MetaArgs) {
     return [{ title: "pwa-kit-vite-minimal poc" }]
@@ -20,6 +21,12 @@ export default function Home() {
                     Bacon ipsum dolor amet chicken turducken rump leberkas beef
                     alcatra buffalo andouille jerky chuck chuck4
                 </p>
+
+                <img
+                    src={exampleImage}
+                    alt="Example image"
+                    className="mx-auto my-4 w-24 h-24 bg-gray-200 rounded-lg border-2 border-dashed border-gray-400"
+                />
 
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

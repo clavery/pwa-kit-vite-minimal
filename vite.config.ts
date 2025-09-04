@@ -9,13 +9,25 @@ export default defineConfig(({ mode }) => ({
     resolve: {
         alias: {
             "@": path.resolve(__dirname, "./src"),
-            "commerce-sdk-isomorphic": "./node_modules/commerce-sdk-isomorphic/lib/index.cjs.js",
+            "commerce-sdk-isomorphic":
+                "./node_modules/commerce-sdk-isomorphic/lib/index.cjs.js",
         },
     },
     build: {
-        sourcemap: true
+        sourcemap: true,
     },
     ssr: {
-        noExternal: mode === 'production' ? true : undefined
-    }
+        noExternal: mode === "production" ? true : undefined,
+    },
+    experimental: {
+        renderBuiltUrl(filename, { type }) {
+            if (type === "asset") {
+                const runtimeCode = `(typeof window !== 'undefined' ? window._BUNDLE_PATH : global._BUNDLE_PATH) + ${JSON.stringify(filename)}`
+
+                return {
+                    runtime: runtimeCode,
+                }
+            }
+        },
+    },
 }))
